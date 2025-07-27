@@ -6,6 +6,7 @@
   height: 95vh;
   width: 700px;
   border: 1px solid red;
+  position: static;
 }
 
 .formSection{
@@ -19,7 +20,6 @@
 .listSection{
   height: 90%;
   width: 99%;
-  /* border: 1px solid purple; */
 }
 
 
