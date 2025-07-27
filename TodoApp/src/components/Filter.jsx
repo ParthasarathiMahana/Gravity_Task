@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useLayoutEffect, useState } from 'react'
 import style from './filter.module.css'
 
 const Filter = ({setShowFilterModal}) => {
@@ -20,15 +20,60 @@ const Filter = ({setShowFilterModal}) => {
   )
 }
 
-export const FilterModal = ({setFilteredValues}) => {
+export const FilterModal = ({setTodoItems, setShowFilterModal, appliedFilter, setAppliedFilter}) => {
   const [done, setDone] = useState(false)
-  const [Pending, setPending] = useState(false)
+  const [pending, setPending] = useState(false)
   const [all, setAll] = useState(false)
 
-  const handleApply = () => {
-    if(all){
-      return setFilteredValues()
+  useLayoutEffect(()=>{
+    
+    for(let item in appliedFilter){
+      
+      if(appliedFilter[item]){
+        if(item==='done'){
+          setDone(true)
+        }
+        if(item==='pending'){
+          setPending(true)
+        }
+        if(item==='all'){
+          setAll(true)
+        }
+      }
     }
+  }, [appliedFilter])
+
+  const handleApply = () => {
+    let allTodos = Object.entries(localStorage)
+
+    let filter = {done:done, pending: pending, all:all}
+    setAppliedFilter(filter)
+
+    if(!all && !done && !pending){
+      return setShowFilterModal(false)
+    }
+    
+    if(all || (done && pending)){
+      setTodoItems(allTodos)
+      return setShowFilterModal(false)
+    }
+
+    if(done){
+      let doneTodos = allTodos.filter(item=>item[1]==='done')
+      setTodoItems(doneTodos)
+      return setShowFilterModal(false)
+    }
+
+    let pendingTodos = allTodos.filter(item=>item[1]==='pending')
+    setTodoItems(pendingTodos)
+    return setShowFilterModal(false)
+  }
+
+  const handleReset = () => {
+    let allTodos = Object.entries(localStorage)
+    setTodoItems(allTodos)
+    setAppliedFilter({})
+    setShowFilterModal(false)
   }
 
   return(
@@ -38,16 +83,16 @@ export const FilterModal = ({setFilteredValues}) => {
             <div className={style.filterBody}>
               <div className={style.checkboxGroup}>
                 <div>
-                <input type="checkbox" style={{marginRight:"5px"}}/>Done
+                <input type="checkbox" style={{marginRight:"5px"}} checked={done } onChange={()=>setDone(pre=>!pre)}/>Done
                 </div>
                 <div>
-                <input type="checkbox" style={{marginRight:"5px"}}/>Pending
+                <input type="checkbox" style={{marginRight:"5px"}} checked={pending} onChange={()=>setPending(pre=>!pre)}/>Pending
                 </div>
                 <div>
-                <input type="checkbox" style={{marginRight:"5px"}}/>All
+                <input type="checkbox" style={{marginRight:"5px"}} checked={all} onChange={()=>setAll(pre=>!pre)}/>All
                 </div>
                 <div className={style.buttonGroup}>
-                  <button style={{border:"1px solid navy", color:"navy"}}>Reset</button>
+                  <button style={{border:"1px solid navy", color:"navy"}} onClick={handleReset}>Reset</button>
                   <button style={{backgroundColor:"navy", color:"white"}} onClick={handleApply}>Apply</button>
                 </div>
               </div>

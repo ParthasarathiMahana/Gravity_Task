@@ -10,7 +10,8 @@ import Filter,{FilterModal} from './components/Filter'
 function TodoApp() {
   const [todoCount, setTodoCount] = useState(0)
   const [showFilterModal, setShowFilterModal] = useState(false)
-      let [todoItems, setTodoItems] = useState([])
+  const [todoItems, setTodoItems] = useState([])
+  const [appliedFilter, setAppliedFilter] = useState({})
 
   return (
     <>
@@ -20,11 +21,11 @@ function TodoApp() {
         <Filter setShowFilterModal={setShowFilterModal}/>
       </div>
       <div className='listSection'>
-        <TodoList todoCount={todoCount} setTodoCount={setTodoCount} todoItems={todoItems} setTodoItems={setTodoItems} />
+        <TodoList todoCount={todoCount} setTodoCount={setTodoCount} todoItems={todoItems} setTodoItems={setTodoItems} appliedFilter={appliedFilter}/>
       </div>
     </div>
     {showFilterModal ? 
-       <FilterModal setFilteredValues={setFilteredValues}/>
+       <FilterModal setTodoItems={setTodoItems} setShowFilterModal={setShowFilterModal} setAppliedFilter={setAppliedFilter} appliedFilter={appliedFilter}/>
         :""}
     </>
   )
